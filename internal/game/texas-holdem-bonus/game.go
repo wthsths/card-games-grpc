@@ -51,7 +51,7 @@ type EntityData struct {
 	GameStatus     int                         `json:"game_status"`
 	AllowedActions []pb.PlayGameRequest_Action `json:"allowed_actions"`
 	Fold           bool                        `json:"fold"`
-	GameResult     int                         `json:"game_result`
+	GameResult     int                         `json:"game_result"`
 }
 
 var (
@@ -186,7 +186,7 @@ func (game *TexasHoldemBonus) Bet() error {
 		return ErrGameHasCompleted
 	}
 
-	if !game.isAllowedAction(pb.PlayGameRequest_ACTION_CHECK) {
+	if !game.isAllowedAction(pb.PlayGameRequest_ACTION_BET) {
 		return ErrActionNotAllowed
 	}
 
