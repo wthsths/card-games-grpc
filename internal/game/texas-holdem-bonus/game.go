@@ -25,6 +25,13 @@ const (
 	GameStatusShowdown
 )
 
+const (
+	GameResultUncompleted = iota
+	GameResultDraw
+	GameResultPlayerWon
+	GameResultDealerWon
+)
+
 type EntityData struct {
 	Deck           []int                       `json:"deck"`
 	DealerCards    []int                       `json:"dealer_cards"`
@@ -35,10 +42,16 @@ type EntityData struct {
 	BetFlop        uint64                      `json:"bet_flop"`
 	BetTurn        uint64                      `json:"bet_turn"`
 	BetRiver       uint64                      `json:"bet_river"`
+	FlopWin        uint64                      `json:"flop_win"`
+	TurnWin        uint64                      `json:"turn_win"`
+	RiverWin       uint64                      `json:"river_win"`
+	AnteWin        uint64                      `json:"ante_win"`
+	BonusWin       uint64                      `json:"bonus_win"`
 	TotalBet       uint64                      `json:"total_bet"`
 	GameStatus     int                         `json:"game_status"`
 	AllowedActions []pb.PlayGameRequest_Action `json:"allowed_actions"`
 	Fold           bool                        `json:"fold"`
+	GameResult     int                         `json:"game_result`
 }
 
 var (
@@ -224,7 +237,37 @@ func (game *TexasHoldemBonus) update() {
 		game.data.GameStatus = GameStatusShowdown
 		game.data.AllowedActions = nil
 
-		log.Println("comparing hands", game.data)
+		var dealerHand []int
+		var playerHand []int
+
+		dealerHand = append(dealerHand, game.data.DealerCards...)
+		dealerHand = append(dealerHand, game.data.CommunityCards...)
+
+		playerHand = append(playerHand, game.data.PlayerCards...)
+		playerHand = append(playerHand, game.data.CommunityCards...)
+
+		dealerRank := evaluateHand(dealerHand...)
+		playerRank := evaluateHand(playerHand...)
+
+		game.data.GameResult = GameResultDraw
+
+		if playerRank < dealerRank {
+			game.data.FlopWin = game.data.BetFlop
+			game.data.TurnWin = game.data.BetTurn
+			game.data.RiverWin = game.data.BetRiver
+
+			game.data.GameResult = GameResultPlayerWon
+		} else if playerRank > dealerRank {
+			game.data.GameResult = GameResultDealerWon
+		}
+
+		if isStraightOrBetter(playerRank) {
+			game.data.AnteWin = game.data.Ante
+		}
+
+		log.Printf("%v ===== %v", getHandCards(dealerHand...), getHandCards(playerHand...))
+		log.Printf("%v (%s) === %v (%s) \n", dealerRank, getRankString(dealerRank), playerRank, getRankString(playerRank))
+		log.Printf("comparing hands %+v\n", game.data)
 	}
 
 	b, _ := json.Marshal(game.data)
