@@ -25,13 +25,6 @@ const (
 	GameStatusShowdown
 )
 
-const (
-	GameResultUncompleted = iota
-	GameResultDraw
-	GameResultPlayerWon
-	GameResultDealerWon
-)
-
 type EntityData struct {
 	Deck           []int                       `json:"deck"`
 	DealerCards    []int                       `json:"dealer_cards"`
@@ -51,7 +44,11 @@ type EntityData struct {
 	GameStatus     int                         `json:"game_status"`
 	AllowedActions []pb.PlayGameRequest_Action `json:"allowed_actions"`
 	Fold           bool                        `json:"fold"`
-	GameResult     int                         `json:"game_result"`
+
+	DealerHandRank       int32  `json:"dealer_hand_rank"`
+	DealerHandRankString string `json:"dealer_hand_rank_string"`
+	PlayerHandRank       int32  `json:"player_hand_rank"`
+	PlayerHandRankString string `json:"player_hand_rank_string"`
 }
 
 var (
@@ -233,12 +230,21 @@ func (game *TexasHoldemBonus) update() {
 
 	game.data.GameStatus++
 
-	if game.data.GameStatus == GameStatusRiver {
+	if game.data.Fold || game.data.GameStatus == GameStatusRiver {
 		game.data.GameStatus = GameStatusShowdown
-		game.data.AllowedActions = nil
+	}
 
-		var dealerHand []int
-		var playerHand []int
+	if game.data.GameStatus == GameStatusShowdown {
+		// Show all community cards
+		for i := 0; i < 5-len(game.data.CommunityCards); i++ {
+			game.data.CommunityCards = append(game.data.CommunityCards, game.drawCard())
+		}
+
+		if len(game.data.DealerCards) == 0 {
+			game.drawDealerCards()
+		}
+
+		var dealerHand, playerHand []int
 
 		dealerHand = append(dealerHand, game.data.DealerCards...)
 		dealerHand = append(dealerHand, game.data.CommunityCards...)
@@ -246,27 +252,25 @@ func (game *TexasHoldemBonus) update() {
 		playerHand = append(playerHand, game.data.PlayerCards...)
 		playerHand = append(playerHand, game.data.CommunityCards...)
 
-		dealerRank := evaluateHand(dealerHand...)
-		playerRank := evaluateHand(playerHand...)
+		game.data.DealerHandRank = evaluateHand(dealerHand...)
+		game.data.PlayerHandRank = evaluateHand(playerHand...)
 
-		game.data.GameResult = GameResultDraw
+		game.data.DealerHandRankString = getRankString(game.data.DealerHandRank)
+		game.data.PlayerHandRankString = getRankString(game.data.PlayerHandRank)
 
-		if playerRank < dealerRank {
+		if !game.data.Fold &&
+			game.data.PlayerHandRank < game.data.DealerHandRank {
+
 			game.data.FlopWin = game.data.BetFlop
 			game.data.TurnWin = game.data.BetTurn
 			game.data.RiverWin = game.data.BetRiver
-
-			game.data.GameResult = GameResultPlayerWon
-		} else if playerRank > dealerRank {
-			game.data.GameResult = GameResultDealerWon
 		}
 
-		if isStraightOrBetter(playerRank) {
+		if isStraightOrBetter(game.data.PlayerHandRank) {
 			game.data.AnteWin = game.data.Ante
 		}
 
 		log.Printf("%v ===== %v", getHandCards(dealerHand...), getHandCards(playerHand...))
-		log.Printf("%v (%s) === %v (%s) \n", dealerRank, getRankString(dealerRank), playerRank, getRankString(playerRank))
 		log.Printf("comparing hands %+v\n", game.data)
 	}
 
@@ -282,4 +286,9 @@ func (game *TexasHoldemBonus) isAllowedAction(action pb.PlayGameRequest_Action) 
 	}
 
 	return false
+}
+
+func (game *TexasHoldemBonus) drawDealerCards() {
+	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
+	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
 }
