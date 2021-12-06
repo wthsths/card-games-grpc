@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+service GameService {
+    rpc CreateGame(CreateGameRequest) returns (CreateGameResponse);
+    rpc GetGameByUuid(GetGameByUuidRequest) returns (GetGameByUuidResponse);
+    rpc PlayGame(PlayGameRequest) returns (PlayGameResponse);
+}
+
+enum GameType {
+    GAME_TYPE_TEXAS_HOLDEM_BONUS = 0;
+}
+
+enum GameStatus {
+    GAME_STATUS_CREATED = 0;
+    GAME_STATUS_PLAYING = 1;
+    GAME_STATUS_COMPLETED = 2;
+}
+
+message Game {
+    string uuid = 1;
+    uint64 player = 2;
+    GameType type = 3;
+    GameStatus status = 4;
+    bytes data = 5;
+}
+
+message CreateGameRequest {
+    uint64 player = 1;
+    GameType type = 2;
+}
+
+message CreateGameResponse {
+    Game game = 1;
+}
+
+message GetGameByUuidRequest {
+    string uuid = 1;
+}
+
+message GetGameByUuidResponse {
+    Game game = 1;
+}
+
+message PlayGameRequest {
+    enum Action {
+        ACTION_DEAL = 0;
+        ACTION_PLAY = 1;
+        ACTION_FOLD = 2;
+        ACTION_BET = 3;
+        ACTION_CHECK = 4;
+    }
+
+    Action action = 1;
+    string uuid = 2;
+}
+
+message PlayGameResponse {
+    Game game = 1;
+}
