@@ -73,10 +73,7 @@ func NewGame() (*TexasHoldemBonus, error) {
 		game.data.Deck = append(game.data.Deck, i)
 	}
 
-	b, err := json.Marshal(game.data)
-	if err != nil {
-		return nil, err
-	}
+	b, _ := json.Marshal(game.data)
 	game.entity.Data = b
 
 	return game, nil
@@ -113,9 +110,6 @@ func (game *TexasHoldemBonus) Deal() error {
 
 	game.shuffleDeck()
 
-	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
-	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
-
 	game.data.PlayerCards = append(game.data.PlayerCards, game.drawCard())
 	game.data.PlayerCards = append(game.data.PlayerCards, game.drawCard())
 
@@ -128,12 +122,8 @@ func (game *TexasHoldemBonus) Deal() error {
 }
 
 func (game *TexasHoldemBonus) Play() error {
-	if game.data.Fold || game.data.GameStatus > GameStatusTurn {
-		return ErrGameHasCompleted
-	}
-
-	if !game.isAllowedAction(pb.PlayGameRequest_ACTION_PLAY) {
-		return ErrActionNotAllowed
+	if err := game.checkIfActionAllowed(pb.PlayGameRequest_ACTION_PLAY); err != nil {
+		return err
 	}
 
 	game.data.BetFlop = game.data.Ante * 2
@@ -148,12 +138,8 @@ func (game *TexasHoldemBonus) Play() error {
 }
 
 func (game *TexasHoldemBonus) Fold() error {
-	if game.data.Fold || game.data.GameStatus > GameStatusTurn {
-		return ErrGameHasCompleted
-	}
-
-	if !game.isAllowedAction(pb.PlayGameRequest_ACTION_FOLD) {
-		return ErrActionNotAllowed
+	if err := game.checkIfActionAllowed(pb.PlayGameRequest_ACTION_FOLD); err != nil {
+		return err
 	}
 
 	game.data.Fold = true
@@ -164,12 +150,8 @@ func (game *TexasHoldemBonus) Fold() error {
 }
 
 func (game *TexasHoldemBonus) Check() error {
-	if game.data.Fold || game.data.GameStatus > GameStatusTurn {
-		return ErrGameHasCompleted
-	}
-
-	if !game.isAllowedAction(pb.PlayGameRequest_ACTION_CHECK) {
-		return ErrActionNotAllowed
+	if err := game.checkIfActionAllowed(pb.PlayGameRequest_ACTION_CHECK); err != nil {
+		return err
 	}
 
 	game.data.CommunityCards = append(game.data.CommunityCards, game.drawCard())
@@ -179,12 +161,8 @@ func (game *TexasHoldemBonus) Check() error {
 }
 
 func (game *TexasHoldemBonus) Bet() error {
-	if game.data.Fold || game.data.GameStatus > GameStatusTurn {
-		return ErrGameHasCompleted
-	}
-
-	if !game.isAllowedAction(pb.PlayGameRequest_ACTION_BET) {
-		return ErrActionNotAllowed
+	if err := game.checkIfActionAllowed(pb.PlayGameRequest_ACTION_BET); err != nil {
+		return err
 	}
 
 	if game.data.GameStatus == GameStatusFlop {
@@ -260,7 +238,6 @@ func (game *TexasHoldemBonus) update() {
 
 		if !game.data.Fold &&
 			game.data.PlayerHandRank < game.data.DealerHandRank {
-
 			game.data.FlopWin = game.data.BetFlop
 			game.data.TurnWin = game.data.BetTurn
 			game.data.RiverWin = game.data.BetRiver
@@ -291,4 +268,16 @@ func (game *TexasHoldemBonus) isAllowedAction(action pb.PlayGameRequest_Action) 
 func (game *TexasHoldemBonus) drawDealerCards() {
 	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
 	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
+}
+
+func (game *TexasHoldemBonus) checkIfActionAllowed(action pb.PlayGameRequest_Action) error {
+	if game.data.Fold || game.data.GameStatus > GameStatusTurn {
+		return ErrGameHasCompleted
+	}
+
+	if !game.isAllowedAction(action) {
+		return ErrActionNotAllowed
+	}
+
+	return nil
 }
