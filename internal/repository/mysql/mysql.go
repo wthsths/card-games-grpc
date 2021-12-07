@@ -6,7 +6,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/wthsths/minigames/pb"
+	"github.com/wthsths/card-games-grpc/pb"
 )
 
 type mysqlRepository struct {

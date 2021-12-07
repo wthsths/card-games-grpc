@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/wthsths/minigames/pb"
+	"github.com/wthsths/card-games-grpc/pb"
 )
 
 type TexasHoldemBonus struct {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/wthsths/minigames/pb"
+	"github.com/wthsths/card-games-grpc/pb"
 )
 
 func TestNewGame(t *testing.T) {

@@ -1,6 +1,6 @@
 package game
 
-import "github.com/wthsths/minigames/pb"
+import "github.com/wthsths/card-games-grpc/pb"
 
 type Game interface {
 	SetPlayer(uint64) error

@@ -7,11 +7,11 @@ import (
 	"net"
 	"os"
 
-	minigames "github.com/wthsths/minigames/internal"
-	"github.com/wthsths/minigames/internal/repository"
-	"github.com/wthsths/minigames/internal/repository/inmem"
-	"github.com/wthsths/minigames/internal/repository/mysql"
-	"github.com/wthsths/minigames/pb"
+	minigames "github.com/wthsths/card-games-grpc/internal"
+	"github.com/wthsths/card-games-grpc/internal/repository"
+	"github.com/wthsths/card-games-grpc/internal/repository/inmem"
+	"github.com/wthsths/card-games-grpc/internal/repository/mysql"
+	"github.com/wthsths/card-games-grpc/pb"
 	"google.golang.org/grpc"
 )
 

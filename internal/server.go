@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/wthsths/minigames/internal/game"
-	texasholdembonus "github.com/wthsths/minigames/internal/game/texas-holdem-bonus"
-	"github.com/wthsths/minigames/internal/repository"
-	"github.com/wthsths/minigames/pb"
+	"github.com/wthsths/card-games-grpc/internal/game"
+	texasholdembonus "github.com/wthsths/card-games-grpc/internal/game/texas-holdem-bonus"
+	"github.com/wthsths/card-games-grpc/internal/repository"
+	"github.com/wthsths/card-games-grpc/pb"
 )
 
 type Server struct {

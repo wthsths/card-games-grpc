@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	texasholdembonus "github.com/wthsths/minigames/internal/game/texas-holdem-bonus"
-	"github.com/wthsths/minigames/pb"
+	texasholdembonus "github.com/wthsths/card-games-grpc/internal/game/texas-holdem-bonus"
+	"github.com/wthsths/card-games-grpc/pb"
 	"google.golang.org/grpc"
 )
 
