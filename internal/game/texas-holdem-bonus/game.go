@@ -213,12 +213,14 @@ func (game *TexasHoldemBonus) update() {
 
 	if game.data.GameStatus == GameStatusShowdown {
 		// Show all community cards
-		for i := 0; i < 5-len(game.data.CommunityCards); i++ {
+		communityCardDrawnCount := 5 - len(game.data.CommunityCards)
+		for i := 0; i < communityCardDrawnCount; i++ {
 			game.data.CommunityCards = append(game.data.CommunityCards, game.drawCard())
 		}
 
-		if len(game.data.DealerCards) == 0 {
-			game.drawDealerCards()
+		dealerCardDrawnCount := 2 - len(game.data.DealerCards)
+		for i := 0; i < dealerCardDrawnCount; i++ {
+			game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
 		}
 
 		var dealerHand, playerHand []int
@@ -277,11 +279,6 @@ func (game *TexasHoldemBonus) isAllowedAction(action pb.PlayGameRequest_Action) 
 	}
 
 	return false
-}
-
-func (game *TexasHoldemBonus) drawDealerCards() {
-	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
-	game.data.DealerCards = append(game.data.DealerCards, game.drawCard())
 }
 
 func (game *TexasHoldemBonus) checkIfActionAllowed(action pb.PlayGameRequest_Action) error {
