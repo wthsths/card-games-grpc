@@ -24,7 +24,7 @@ func NewMySQLRepository(db *sql.DB) (*mysqlRepository, error) {
 }
 
 func (repo *mysqlRepository) CreateGame(ctx context.Context, game *pb.Game) error {
-	if err := repo.db.Ping(); err != nil {
+	if err := repo.db.PingContext(ctx); err != nil {
 		return err
 	}
 
@@ -40,7 +40,7 @@ func (repo *mysqlRepository) CreateGame(ctx context.Context, game *pb.Game) erro
 }
 
 func (repo *mysqlRepository) GetGameByUuid(ctx context.Context, uuid string) (*pb.Game, error) {
-	if err := repo.db.Ping(); err != nil {
+	if err := repo.db.PingContext(ctx); err != nil {
 		return nil, err
 	}
 
@@ -57,7 +57,7 @@ func (repo *mysqlRepository) GetGameByUuid(ctx context.Context, uuid string) (*p
 }
 
 func (repo *mysqlRepository) UpdateByUuid(ctx context.Context, uuid string, game *pb.Game) (err error) {
-	if err := repo.db.Ping(); err != nil {
+	if err := repo.db.PingContext(ctx); err != nil {
 		return err
 	}
 
@@ -68,7 +68,7 @@ func (repo *mysqlRepository) UpdateByUuid(ctx context.Context, uuid string, game
 }
 
 func (repo *mysqlRepository) GetGamesByPlayer(ctx context.Context, player uint64) (games []*pb.Game, err error) {
-	if err := repo.db.Ping(); err != nil {
+	if err := repo.db.PingContext(ctx); err != nil {
 		return nil, err
 	}
 
