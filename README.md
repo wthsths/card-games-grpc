@@ -2,7 +2,7 @@
 This is a GRPC service that will provide the following card games.
 
 # Games
-   [ ] Missisipi Stud
+[ ] Missisipi Stud
    [ ] Let It Ride
    [ ] Crazy 4 Poker
    [ ] Caribbean Stud
