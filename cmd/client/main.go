@@ -23,11 +23,11 @@ func main() {
 
 	client := pb.NewGameServiceClient(conn)
 
-	ctx := context.Background()
+	ctx := context.TODO()
 
-	//FoldAfterDeal(ctx, client)
+	FoldAfterDeal(ctx, client)
 	//PlayAndFoldAfterDeal(ctx, client)
-	CreateGame(ctx, client)
+	//CreateGame(ctx, client)
 }
 
 func PlayAndFoldAfterDeal(ctx context.Context, client pb.GameServiceClient) {
