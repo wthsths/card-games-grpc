@@ -70,7 +70,7 @@ func (s *Server) PlayGame(ctx context.Context, req *pb.PlayGameRequest) (*pb.Pla
 
 	switch req.Action {
 	case pb.PlayGameRequest_ACTION_DEAL:
-		err = game.Deal()
+		err = game.Deal(req.Amount, req.Bonus)
 	case pb.PlayGameRequest_ACTION_PLAY:
 		err = game.Play()
 	case pb.PlayGameRequest_ACTION_FOLD:

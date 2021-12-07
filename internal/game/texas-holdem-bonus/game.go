@@ -55,6 +55,8 @@ var (
 	ErrGameHasStartedOrCompleted = errors.New("game has already started or completed")
 	ErrGameHasCompleted          = errors.New("the game has already completed")
 	ErrActionNotAllowed          = errors.New("action is not allowed")
+	ErrAnteAmount                = errors.New("invalid ante amount")
+	ErrInvalidBonusType          = errors.New("invalid bonus type")
 )
 
 func NewGame() (*TexasHoldemBonus, error) {
@@ -100,9 +102,13 @@ func (game *TexasHoldemBonus) SetPlayer(id uint64) error {
 	return nil
 }
 
-func (game *TexasHoldemBonus) Deal() error {
+func (game *TexasHoldemBonus) Deal(amount uint64, bonus []*pb.PlayGameRequest_Bonus) error {
 	if game.entity.Status != pb.GameStatus_GAME_STATUS_CREATED {
 		return ErrGameHasStartedOrCompleted
+	}
+
+	if amount < 1 {
+		return ErrAnteAmount
 	}
 
 	game.entity.Status = pb.GameStatus_GAME_STATUS_PLAYING
@@ -112,8 +118,15 @@ func (game *TexasHoldemBonus) Deal() error {
 	game.data.PlayerCards = append(game.data.PlayerCards, game.drawCard())
 	game.data.PlayerCards = append(game.data.PlayerCards, game.drawCard())
 
-	game.data.Bonus = 10
-	game.data.Ante = 10
+	for _, b := range bonus {
+		if b.Index > 0 {
+			return ErrInvalidBonusType
+		}
+
+		game.data.Bonus = b.Amount
+	}
+
+	game.data.Ante = amount
 
 	game.update()
 

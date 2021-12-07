@@ -4,7 +4,7 @@ import "github.com/wthsths/minigames/pb"
 
 type Game interface {
 	SetPlayer(uint64) error
-	Deal() error
+	Deal(uint64, []*pb.PlayGameRequest_Bonus) error
 	Play() error
 	Fold() error
 	Check() error

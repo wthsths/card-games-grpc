@@ -53,8 +53,15 @@ message PlayGameRequest {
         ACTION_CHECK = 4;
     }
 
+    message Bonus {
+        int32 index = 1;
+        uint64 amount = 2;
+    }
+
     Action action = 1;
     string uuid = 2;
+    uint64 amount = 3;
+    repeated Bonus bonus = 4;
 }
 
 message PlayGameResponse {

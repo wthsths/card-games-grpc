@@ -52,7 +52,7 @@ func TestSetPlayerId(t *testing.T) {
 
 func TestDeal(t *testing.T) {
 	game, _ := NewGame()
-	err := game.Deal()
+	err := game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	if err != nil {
 		t.Fail()
 	}
@@ -60,8 +60,8 @@ func TestDeal(t *testing.T) {
 
 func TestDealIfDealtBefore(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
-	err := game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
+	err := game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	if err == nil {
 		t.Fail()
 	}
@@ -77,7 +77,7 @@ func TestPlayIfNotDealt(t *testing.T) {
 
 func TestFold(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	err := game.Fold()
 	if err != nil {
 		t.Fail()
@@ -86,7 +86,7 @@ func TestFold(t *testing.T) {
 
 func TestPlay(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	if err := game.Play(); err != nil {
 		t.Fail()
 	}
@@ -94,7 +94,7 @@ func TestPlay(t *testing.T) {
 
 func TestFoldNotAllowed(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	game.Play()
 	if err := game.Fold(); err == nil {
 		t.Fail()
@@ -103,7 +103,7 @@ func TestFoldNotAllowed(t *testing.T) {
 
 func TestCheckNotAllowed(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	if err := game.Check(); err == nil {
 		t.Fail()
 	}
@@ -111,7 +111,7 @@ func TestCheckNotAllowed(t *testing.T) {
 
 func TestCheck(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	game.Play()
 	if err := game.Check(); err != nil {
 		t.Fail()
@@ -120,7 +120,7 @@ func TestCheck(t *testing.T) {
 
 func TestAnyActionIfGameCompleted(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	game.Fold()
 	if err := game.Fold(); err == nil {
 		t.Fail()
@@ -129,7 +129,7 @@ func TestAnyActionIfGameCompleted(t *testing.T) {
 
 func TestBet(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	game.Play()
 	if err := game.Bet(); err != nil {
 		t.Fail()
@@ -138,7 +138,7 @@ func TestBet(t *testing.T) {
 
 func TestBetNotAllowed(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	if err := game.Bet(); err == nil {
 		t.Fail()
 	}
@@ -146,7 +146,7 @@ func TestBetNotAllowed(t *testing.T) {
 
 func TestBetRiver(t *testing.T) {
 	game, _ := NewGame()
-	game.Deal()
+	game.Deal(0, []*pb.PlayGameRequest_Bonus{})
 	game.Play()
 	if err := game.Bet(); err != nil {
 		t.Fail()

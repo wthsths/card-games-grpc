@@ -4,15 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"time"
 
 	texasholdembonus "github.com/wthsths/minigames/internal/game/texas-holdem-bonus"
 	"github.com/wthsths/minigames/pb"
 	"google.golang.org/grpc"
 )
-
-type dataStruct struct {
-	PlayerHancRankString string `json:"player_hand_rank_string"`
-}
 
 func main() {
 	conn, err := grpc.Dial(":3001", grpc.WithInsecure())
@@ -61,6 +58,10 @@ func FoldAfterDeal(ctx context.Context, client pb.GameServiceClient) {
 	_, _ = client.PlayGame(ctx, &pb.PlayGameRequest{
 		Action: pb.PlayGameRequest_ACTION_DEAL,
 		Uuid:   createGame.Game.Uuid,
+		Amount: 10,
+		Bonus: []*pb.PlayGameRequest_Bonus{
+			{Index: 0, Amount: 20},
+		},
 	})
 
 	foldResp, _ := client.PlayGame(ctx, &pb.PlayGameRequest{
@@ -74,15 +75,15 @@ func FoldAfterDeal(ctx context.Context, client pb.GameServiceClient) {
 		log.Println(err)
 	}
 
-	//if dataStruct.PlayerHancRankString != "Straight" &&
-	//	dataStruct.PlayerHancRankString != "Flush" &&
-	//	dataStruct.PlayerHancRankString != "Straight Flush" &&
-	//	dataStruct.PlayerHancRankString != "Four of A Kind" {
-	//	time.Sleep(100 * time.Millisecond)
-	//
-	//		FoldAfterDeal(ctx, client)
-	//		return
-	//	}
+	if dataStruct.PlayerHandRankString != "Straight" &&
+		dataStruct.PlayerHandRankString != "Flush" &&
+		dataStruct.PlayerHandRankString != "Straight Flush" &&
+		dataStruct.PlayerHandRankString != "Four of A Kind" {
+		time.Sleep(100 * time.Millisecond)
+
+		FoldAfterDeal(ctx, client)
+		return
+	}
 
 	log.Printf("%+v\n", dataStruct)
 }
