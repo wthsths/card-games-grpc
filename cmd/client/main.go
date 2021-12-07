@@ -25,8 +25,8 @@ func main() {
 
 	ctx := context.Background()
 
-	//FoldAfterDeal(ctx, client)
-	PlayAndFoldAfterDeal(ctx, client)
+	FoldAfterDeal(ctx, client)
+	//PlayAndFoldAfterDeal(ctx, client)
 }
 
 func PlayAndFoldAfterDeal(ctx context.Context, client pb.GameServiceClient) {

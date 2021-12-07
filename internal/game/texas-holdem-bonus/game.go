@@ -3,7 +3,6 @@ package texasholdembonus
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"math/rand"
 	"time"
 
@@ -113,7 +112,7 @@ func (game *TexasHoldemBonus) Deal() error {
 	game.data.PlayerCards = append(game.data.PlayerCards, game.drawCard())
 	game.data.PlayerCards = append(game.data.PlayerCards, game.drawCard())
 
-	game.data.Bonus = 0
+	game.data.Bonus = 10
 	game.data.Ante = 10
 
 	game.update()
@@ -247,8 +246,23 @@ func (game *TexasHoldemBonus) update() {
 			game.data.AnteWin = game.data.Ante
 		}
 
-		log.Printf("%v ===== %v", getHandCards(dealerHand...), getHandCards(playerHand...))
-		log.Printf("comparing hands %+v\n", game.data)
+		if isAcePair(game.data.DealerCards...) && isAcePair(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 1000
+		} else if isAcePair(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 30
+		} else if isAceAndKing(game.data.PlayerCards...) && isSuited(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 25
+		} else if isAceAndQueen(game.data.PlayerCards...) && isSuited(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 20
+		} else if isAceAndJack(game.data.PlayerCards...) && isSuited(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 20
+		} else if isAceAndKing(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 15
+		} else if isKingPair(game.data.PlayerCards...) || isQueenPair(game.data.PlayerCards...) || isJackPair(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 10
+		} else if isPair(game.data.PlayerCards...) {
+			game.data.BonusWin = game.data.Bonus * 3
+		}
 	}
 
 	b, _ := json.Marshal(game.data)
