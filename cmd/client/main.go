@@ -25,8 +25,9 @@ func main() {
 
 	ctx := context.Background()
 
-	FoldAfterDeal(ctx, client)
+	//FoldAfterDeal(ctx, client)
 	//PlayAndFoldAfterDeal(ctx, client)
+	CreateGame(ctx, client)
 }
 
 func PlayAndFoldAfterDeal(ctx context.Context, client pb.GameServiceClient) {
@@ -84,4 +85,14 @@ func FoldAfterDeal(ctx context.Context, client pb.GameServiceClient) {
 	//	}
 
 	log.Printf("%+v\n", dataStruct)
+}
+
+func CreateGame(ctx context.Context, client pb.GameServiceClient) {
+	_, _ = client.CreateGame(ctx, &pb.CreateGameRequest{Player: 1})
+	_, _ = client.CreateGame(ctx, &pb.CreateGameRequest{Player: 1})
+	getGames, err := client.GetGamesByPlayer(ctx, &pb.GetGamesByPlayerRequest{Player: 1})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%+v count: %v", getGames, len(getGames.Game))
 }

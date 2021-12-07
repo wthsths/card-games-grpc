@@ -6,6 +6,7 @@ service GameService {
     rpc CreateGame(CreateGameRequest) returns (CreateGameResponse);
     rpc GetGameByUuid(GetGameByUuidRequest) returns (GetGameByUuidResponse);
     rpc PlayGame(PlayGameRequest) returns (PlayGameResponse);
+    rpc GetGamesByPlayer(GetGamesByPlayerRequest) returns (GetGamesByPlayerResponse);
 }
 
 enum GameType {
@@ -58,4 +59,12 @@ message PlayGameRequest {
 
 message PlayGameResponse {
     Game game = 1;
+}
+
+message GetGamesByPlayerRequest {
+    uint64 player = 1;
+}
+
+message GetGamesByPlayerResponse {
+    repeated Game game = 1;
 }

@@ -62,3 +62,17 @@ func (repo *inmemRepository) UpdateByUuid(ctx context.Context, uuid string, game
 
 	return errors.New("game could not found")
 }
+
+func (repo *inmemRepository) GetGamesByPlayer(ctx context.Context, player uint64) ([]*pb.Game, error) {
+	repo.Lock()
+	defer repo.Unlock()
+
+	var games []*pb.Game
+	for _, g := range repo.games {
+		if g.Player == player {
+			games = append(games, g)
+		}
+	}
+
+	return games, nil
+}

@@ -101,6 +101,17 @@ func (s *Server) PlayGame(ctx context.Context, req *pb.PlayGameRequest) (*pb.Pla
 	}, nil
 }
 
+func (s *Server) GetGamesByPlayer(ctx context.Context, req *pb.GetGamesByPlayerRequest) (*pb.GetGamesByPlayerResponse, error) {
+	games, err := s.repo.GetGamesByPlayer(ctx, req.Player)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetGamesByPlayerResponse{
+		Game: games,
+	}, nil
+}
+
 func (s *Server) getGame(ctx context.Context, uuid string) (game.Game, error) {
 	var game game.Game
 	var err error
