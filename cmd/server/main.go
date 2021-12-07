@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	"net"
+	"os"
 
 	minigames "github.com/wthsths/minigames/internal"
 	"github.com/wthsths/minigames/internal/repository"
@@ -14,34 +15,61 @@ import (
 	"google.golang.org/grpc"
 )
 
+var config struct {
+	addr    string
+	repo    string
+	connStr string
+}
+
+func init() {
+	config.addr = os.Getenv("ADDR")
+	config.repo = os.Getenv("REPO")
+	config.connStr = os.Getenv("CONN_STR")
+
+	// set defaults
+	if config.addr == "" {
+		config.addr = ":3001"
+	}
+
+	if config.repo == "" {
+		config.repo = "inmem"
+	}
+
+	if config.connStr == "" {
+		config.connStr = "root:@tcp(127.0.0.1:3306)/test"
+	}
+}
+
 func main() {
-	var (
-		addr    = flag.String("addr", ":3001", "grpc listen addr")
-		repo    = flag.String("repo", "inmem", "service repository")
-		connStr = flag.String("connStr", "root:@tcp(127.0.0.1:3306)/test", "repository connection string")
-	)
+	flag.StringVar(&config.addr, "addr", config.addr, "grpc listen addr")
+	flag.StringVar(&config.repo, "repo", config.repo, "service repository")
+	flag.StringVar(&config.connStr, "connStr", config.connStr, "repository connection string")
+
 	flag.Parse()
 
 	var r repository.Repository
 
-	switch *repo {
+	switch config.repo {
 	case "inmem":
 		r, _ = inmem.NewInmemRepository()
 	case "mysql":
-		conn, err := sql.Open(*repo, *connStr)
+		conn, err := sql.Open(config.repo, config.connStr)
 		if err != nil {
 			panic(err)
 		}
 		defer conn.Close()
 
-		r, _ = mysql.NewMySQLRepository(conn)
+		r, err = mysql.NewMySQLRepository(conn)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	srv, _ := minigames.NewServer(r)
 
 	server := grpc.NewServer()
 
-	listen, err := net.Listen("tcp", *addr)
+	listen, err := net.Listen("tcp", config.addr)
 	if err != nil {
 		log.Panic(err)
 	}
