@@ -5,7 +5,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/wthsths/minigames/pb"
+	"github.com/wthsths/card-games-grpc/pb"
 )
 
 type inmemRepository struct {
