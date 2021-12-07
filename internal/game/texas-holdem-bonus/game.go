@@ -265,6 +265,8 @@ func (game *TexasHoldemBonus) update() {
 		} else if isPair(game.data.PlayerCards...) {
 			game.data.BonusWin = game.data.Bonus * 3
 		}
+
+		game.entity.Status = pb.GameStatus_GAME_STATUS_COMPLETED
 	}
 
 	b, _ := json.Marshal(game.data)
